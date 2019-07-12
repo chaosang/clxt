@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="10">
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-gl/echarts-gl.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/simplex.js"></script>
+
+    <title>智能车路协同信息服务客户端</title>
+    <style>
+    *{
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
+    body{
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        padding: 10px;
+        background-color: #f1f1f1;
+        height: 100%;
+    }
+    .page-header{
+        background: #f1f1f1;
+        padding: 20px;
+        text-align: center;
+    }
+    .row{
+        margin: 0;
+        padding: 0;
+        height: 100%;
+    }
+    .column1{
+        float: left;
+        width: 50%;
+        height: 100%;
+        background-color: #f1f1f1;
+    }
+    .column2{
+        float: right;
+        width: 50%;
+        height: 100%;
+        background-color: #f1f1f1;
+    }
+    .tab_1{
+        height: 100%;
+    }
+    .tab_2{
+        height: 100%;
+    }
+
+    .footer{
+        background-color:darkslategrey;
+        padding: 10px;
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+<div class="page-header">
+    <h1>车路协同信息服务</h1>
+</div>
+<div>
+    <p>
+        <a href="" class="btn btn-info btn-lg">
+            <span class="glyphicon glyphicon-dashboard"></span>查看历史数据
+        </a>
+    </p>
+</div>
+<div class="row">
+    <div class="column1 ">
+        <h2>设备分布地图</h2>
+        <div class="tab_1">
+            <iframe src="https://gis.aliyun-iot-share.com/auth/gis/JDJhJDEwJHR2NFg0MWUxbFVYV3NELnhYaG9hSWU2b3I5ZnpTLjNlc3VDRTNiMEVudHZHY2g3YThBeVBH/2a6f53f1fd80435db04f868312d79c99"
+                    height="500px"
+                    width="100%"
+                    frameborder="0"
+                    scrolling="0"
+            ></iframe>
+        </div>
+    </div>
+    <div class="column2 ">
+        <h2>当前路口流量</h2>
+        <div id="main" class="tab_2" style="height:500px;width:100%;">
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <p>莱斯电子设备有限公司 2019</p>
+</div>
+<!-- 为 ECharts 准备一个具备大小（nmsl）的 DOM -->
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+    // id与ll数组接受数据
+    var id = [];
+    var ll = [];
+
+    //AJAX接收数据主体
+    $.ajax({
+        contentType : "application/json",
+        type:"GET",
+        url:"/zs/echart",
+        dataType:"json",
+        async:false,
+        success:function (result) {
+
+            for (var i=0;i<result.length;i++){
+                //id数据为横轴数据
+                id.push(result[i].id)
+                //ll数据为纵轴数据
+                ll.push(result[i].ll)
+            }
+        },
+        error :function(errorMsg) {
+            alert("获取后台数据失败！");
+        }
+    });
+
+    // 指定图表的配置项和数据
+    var option = {
+        title: {
+
+        },
+        tooltip: {},
+        legend: {
+            data:['车流量']
+        },
+        xAxis: {
+            //结合
+            name:'时间',
+            data:id
+        },
+
+        yAxis: {},
+        series: [{
+            name: '流量',
+            type: 'bar',
+            //结合
+            data: ll
+        }]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+</script>
+</body>
